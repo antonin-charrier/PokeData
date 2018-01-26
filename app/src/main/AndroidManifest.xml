@@ -18,7 +18,7 @@
         </activity>
 
         <service
-            android:name=".Services.getPokemonListService"
+            android:name=".Services.GetPokemonListService"
             android:exported="false"></service>
     </application>
 
