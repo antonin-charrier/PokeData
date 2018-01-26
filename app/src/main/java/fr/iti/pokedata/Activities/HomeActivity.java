@@ -1,9 +1,11 @@
-package fr.iti.pokedata;
+package fr.iti.pokedata.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MenuRegion extends AppCompatActivity {
+import fr.iti.pokedata.R;
+
+public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
