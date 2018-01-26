@@ -3,6 +3,7 @@ package fr.iti.pokedata.Services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.File;
@@ -14,29 +15,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
+import fr.iti.pokedata.Activities.PokemonListActivity;
+
 public class GetPokemonListService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_POKEMON_LIST = "fr.iti.pokedata.action.POKEMON_LIST";
+    private static final String TAG = GetPokemonListService.class.getName();
+
 
     public GetPokemonListService() {
         super("GetPokemonListService");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
     public static void getAllPokemon(Context context) {
         Intent intent = new Intent(context, GetPokemonListService.class);
         intent.setAction(ACTION_POKEMON_LIST);
@@ -53,12 +42,8 @@ public class GetPokemonListService extends IntentService {
         }
     }
 
-    /**
-     * Handle action PokemonList in the provided background thread with the provided
-     * parameters.
-     */
     private void handleActionPokemonList() {
-        Log.i("POKEMON_LIST", "Handling action POKEMON_LIST");
+        Log.i(TAG, "Handling action POKEMON_LIST");
         URL url;
         try {
             url = new URL("https://pokeapi.co/api/v2/pokemon/?limit=949");
@@ -66,8 +51,9 @@ public class GetPokemonListService extends IntentService {
             conn.setRequestMethod("GET");
             conn.connect();
             if(HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
-                copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), "pokemon.json"));
-                Log.i("POKEMON_LIST", "Pokemon json downloaded");
+                copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), "pokemonList.json"));
+                Log.i(TAG, "Completed download of Pokemon list JSON");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(PokemonListActivity.POKEMON_UPDATE));
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
