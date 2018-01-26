@@ -1,7 +1,7 @@
 package fr.iti.pokedata.Activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import fr.iti.pokedata.R;
 import fr.iti.pokedata.Services.GetPokemonListService;
