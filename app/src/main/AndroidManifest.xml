@@ -26,7 +26,11 @@
         <activity
             android:name=".Activities.PokemonListActivity"
             android:label="@string/title_activity_pokemon_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".Services.GetPokemonService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
