@@ -5,6 +5,7 @@
     android:background="@drawable/background_item_pokemon_list">
 
     <ImageView
+        android:id="@+id/rv_pokemon_list_item_sprite"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.2"/>
@@ -20,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="English name"
+            android:text="English name1"
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -29,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Japanese name"
+            android:text="Japanese name1"
             android:textStyle="italic"/>
 
     </LinearLayout>

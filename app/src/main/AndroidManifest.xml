@@ -30,7 +30,12 @@
 
         <service
             android:name=".Services.GetPokemonService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity
+            android:name=".Activities.PokemonActivity"
+            android:label="@string/title_activity_pokemon"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

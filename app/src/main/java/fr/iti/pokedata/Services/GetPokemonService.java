@@ -16,20 +16,19 @@ import fr.iti.pokedata.Activities.PokemonListActivity;
 import fr.iti.pokedata.Utils.ServicesUtils;
 
 public class GetPokemonService extends IntentService {
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_POKEMON = "fr.iti.pokedata.Services.action.POKEMON";
     private static final String TAG = GetPokemonService.class.getName();
 
-    private static final String PARAM_NAME = "fr.iti.pokedata.Services.extra.POKEMON_NAME";
+    private static final String POKEMON_NAME = "fr.iti.pokedata.Services.extra.POKEMON_NAME";
 
     public GetPokemonService() {
         super("GetPokemonService");
     }
 
-    public static void startActionPokemon(Context context, String name) {
+    public static void getPokemon(Context context, String name) {
         Intent intent = new Intent(context, GetPokemonService.class);
         intent.setAction(ACTION_POKEMON);
-        intent.putExtra(PARAM_NAME, name);
+        intent.putExtra(POKEMON_NAME, name);
         context.startService(intent);
     }
 
@@ -38,7 +37,7 @@ public class GetPokemonService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_POKEMON.equals(action)) {
-                final String name = intent.getStringExtra(PARAM_NAME);
+                final String name = intent.getStringExtra(POKEMON_NAME);
                 handleActionPokemon(name);
             }
         }
@@ -55,7 +54,9 @@ public class GetPokemonService extends IntentService {
             if(HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
                 ServicesUtils.copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), name+".json"));
                 Log.i(TAG, "Completed download of Pokemon list JSON");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(PokemonListActivity.POKEMON_UPDATE));
+                Intent intent = new Intent(PokemonListActivity.POKEMON_UPDATE);
+                intent.putExtra("name", name);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
