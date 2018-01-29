@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -34,7 +33,8 @@ import fr.iti.pokedata.Services.GetPokemonListService;
 public class PokemonListActivity extends AppCompatActivity {
 
     private static final String TAG = PokemonListActivity.class.getName();
-    public static final String POKEMON_UPDATE = "com.octip.cours.inf4042_11.POKEMON_UPDATE";
+    public static final String POKEMON_UPDATE = "fr.iti.pokedata.POKEMON_UPDATE";
+    public static final String POKEMON_LIST_UPDATE = "fr.iti.pokedata.POKEMON_LIST_UPDATE";
 
     private RecyclerView rvPokemonList;
 
@@ -48,7 +48,7 @@ public class PokemonListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         GetPokemonListService.getAllPokemon(this);
-        IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
+        IntentFilter intentFilter = new IntentFilter(POKEMON_LIST_UPDATE);
         LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonUpdate(), intentFilter);
 
         rvPokemonList = findViewById(R.id.rv_pokemon_list);

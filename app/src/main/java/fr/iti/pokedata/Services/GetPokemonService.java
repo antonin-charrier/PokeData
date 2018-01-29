@@ -12,6 +12,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import fr.iti.pokedata.Activities.PokemonListActivity;
+import fr.iti.pokedata.Utils.ServicesUtils;
+
 public class GetPokemonService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_POKEMON = "fr.iti.pokedata.Services.action.POKEMON";
@@ -32,16 +35,25 @@ public class GetPokemonService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (intent != null) {
+            final String action = intent.getAction();
+            if (ACTION_POKEMON.equals(action)) {
+                final String name = intent.getStringExtra(PARAM_NAME);
+                handleActionPokemon(name);
+            }
+        }
+    }
+
+    private void handleActionPokemon(String name) {
         Log.i(TAG, "Handling action POKEMON");
         URL url;
         try {
-            final String name = intent.getStringExtra(PARAM_NAME);
             url = new URL("https://pokeapi.co/api/v2/pokemon/"+name);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
             if(HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
-                copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), "pokemonList.json"));
+                ServicesUtils.copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), name+".json"));
                 Log.i(TAG, "Completed download of Pokemon list JSON");
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(PokemonListActivity.POKEMON_UPDATE));
             }
@@ -50,9 +62,5 @@ public class GetPokemonService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void handleActionPokemon(String name) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

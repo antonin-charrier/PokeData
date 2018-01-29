@@ -7,10 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,7 +51,7 @@ public class GetPokemonListService extends IntentService {
             if(HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
                 ServicesUtils.copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), "pokemonList.json"));
                 Log.i(TAG, "Completed download of Pokemon list JSON");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(PokemonListActivity.POKEMON_UPDATE));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(PokemonListActivity.POKEMON_LIST_UPDATE));
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
