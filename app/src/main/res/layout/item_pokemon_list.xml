@@ -1,11 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:orientation="horizontal"
+    android:background="@drawable/background_item_pokemon_list">
 
-    <TextView
-        android:id="@+id/rv_pokemon_list_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/rv_pokemon_list_item_name1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="English name"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/rv_pokemon_list_item_name2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Japanese name"
+            android:textStyle="italic"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/rv_pokemon_list_item_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_margin="5dp"
+            android:text="#001"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/rv_pokemon_list_item_type1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TYPE1"
+                android:layout_margin="5dp"
+                android:background="@drawable/pokemon_type"/>
+
+            <TextView
+                android:id="@+id/rv_pokemon_list_item_type2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TYPE2"
+                android:layout_margin="5dp"
+                android:background="@drawable/pokemon_type"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

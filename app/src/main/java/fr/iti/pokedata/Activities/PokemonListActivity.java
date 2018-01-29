@@ -10,16 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,10 +42,10 @@ public class PokemonListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pokemon_list);
+        setTitle("All Pokemon");
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         GetPokemonListService.getAllPokemon(this);
         IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
@@ -51,6 +54,17 @@ public class PokemonListActivity extends AppCompatActivity {
         rvPokemonList = findViewById(R.id.rv_pokemon_list);
         rvPokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvPokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile()));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public JSONArray getPokemonListFromFile(){
@@ -81,14 +95,21 @@ public class PokemonListActivity extends AppCompatActivity {
         @Override
         public PokemonHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(PokemonListActivity.this);
-            View v = layoutInflater.inflate(R.layout.item_pokemon_list, rvPokemonList, false);
+            View v = layoutInflater.inflate(R.layout.item_pokemon_list, parent, false);
+            WindowManager windowManager = (WindowManager)v.getContext().getSystemService(Context.WINDOW_SERVICE);
+            DisplayMetrics dm = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(dm);
+            int width = dm.widthPixels;
+            v.setLayoutParams(new RecyclerView.LayoutParams(width, RecyclerView.LayoutParams.WRAP_CONTENT));
             return new PokemonHolder(v);
         }
 
         @Override
         public void onBindViewHolder(PokemonHolder holder, int position) {
             try {
-                holder.name.setText(pokemonList.getJSONObject(position).getString("name"));
+                String formattedName = pokemonList.getJSONObject(position).getString("name").trim();
+                formattedName = formattedName.substring(0, 1).toUpperCase() + formattedName.substring(1);
+                holder.name.setText(formattedName);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -109,7 +130,7 @@ public class PokemonListActivity extends AppCompatActivity {
 
             public PokemonHolder(View itemView) {
                 super(itemView);
-                name = itemView.findViewById(R.id.rv_pokemon_list_item);
+                name = itemView.findViewById(R.id.rv_pokemon_list_item_name1);
             }
         }
     }
