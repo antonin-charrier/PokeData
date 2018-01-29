@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import fr.iti.pokedata.Activities.PokemonListActivity;
+import fr.iti.pokedata.Utils.ServicesUtils;
 
 public class GetPokemonListService extends IntentService {
     private static final String ACTION_POKEMON_LIST = "fr.iti.pokedata.action.POKEMON_LIST";
@@ -51,28 +52,13 @@ public class GetPokemonListService extends IntentService {
             conn.setRequestMethod("GET");
             conn.connect();
             if(HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
-                copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), "pokemonList.json"));
+                ServicesUtils.copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), "pokemonList.json"));
                 Log.i(TAG, "Completed download of Pokemon list JSON");
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(PokemonListActivity.POKEMON_UPDATE));
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void copyInputStreamToFile(InputStream in, File file) {
-        try {
-            OutputStream out = new FileOutputStream(file);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            out.close();
-            in.close();
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
