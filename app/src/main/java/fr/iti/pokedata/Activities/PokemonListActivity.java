@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.FileInputStream;
@@ -45,10 +46,10 @@ public class PokemonListActivity extends AppCompatActivity {
 
         GetPokemonListService.getAllPokemon(this);
         IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonUpdate(),intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonUpdate(), intentFilter);
 
         rvPokemonList = findViewById(R.id.rv_pokemon_list);
-        rvPokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvPokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvPokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile()));
     }
 
@@ -58,7 +59,8 @@ public class PokemonListActivity extends AppCompatActivity {
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
-            return new JSONArray(new String(buffer, "UTF-8")); // construction du tableau
+            JSONObject json = new JSONObject(new String(buffer, "UTF-8"));
+            return json.getJSONArray("results");
         } catch (IOException e) {
             e.printStackTrace();
             return new JSONArray();
@@ -98,6 +100,7 @@ public class PokemonListActivity extends AppCompatActivity {
         }
 
         public void setNewPokemon(JSONArray pokemonList) {
+            this.pokemonList = pokemonList;
             notifyDataSetChanged();
         }
 
