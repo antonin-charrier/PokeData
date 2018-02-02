@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -28,16 +28,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import fr.iti.pokedata.Models.Pokemon;
 import fr.iti.pokedata.R;
 import fr.iti.pokedata.Services.GetPokemonListService;
-import fr.iti.pokedata.Services.GetPokemonService;
 import fr.iti.pokedata.Utils.Utils;
 
 public class PokemonListActivity extends AppCompatActivity {
 
     private static final String TAG = PokemonListActivity.class.getName();
-    public static final String POKEMON_UPDATE = "fr.iti.pokedata.POKEMON_UPDATE";
     public static final String POKEMON_LIST_UPDATE = "fr.iti.pokedata.POKEMON_LIST_UPDATE";
 
     private RecyclerView rvPokemonList;
@@ -46,7 +43,7 @@ public class PokemonListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pokemon_list);
-        setTitle("All Pokemon");
+        setTitle(getString(R.string.all_pokemon));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -57,7 +54,7 @@ public class PokemonListActivity extends AppCompatActivity {
 
         rvPokemonList = findViewById(R.id.rv_pokemon_list);
         rvPokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rvPokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile(), this));
+        rvPokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile()));
     }
 
     @Override
@@ -88,30 +85,12 @@ public class PokemonListActivity extends AppCompatActivity {
         }
     }
 
-    public JSONObject getPokemonFromFile(String name) {
-        try {
-            InputStream is = new FileInputStream(getCacheDir() + "/" + name + ".json");
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
-            return new JSONObject(new String(buffer, "UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new JSONObject();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return new JSONObject();
-        }
-    }
-
     private class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonHolder> {
 
         private JSONArray pokemonList;
-        private Context context;
 
-        public PokemonListAdapter(JSONArray pokemonList, Context context) {
+        PokemonListAdapter(JSONArray pokemonList) {
             this.pokemonList = pokemonList;
-            this.context = context;
         }
 
         @Override
@@ -129,15 +108,17 @@ public class PokemonListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(PokemonHolder holder, int position) {
             try {
-                /*String currentPokemonName = pokemonList.getJSONObject(position).getString("name");
-                GetPokemonService.getPokemon(context, currentPokemonName);
-                IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
-                LocalBroadcastManager.getInstance(context).registerReceiver(new PokemonUpdate(), intentFilter);
-
-                Pokemon pokemon = new Pokemon("", "", "","","");
-                bindPokemonToHolder(holder, pokemon);*/
-                String name = pokemonList.getJSONObject(position).getString("name").trim();
-                holder.name1.setText(Utils.getFormattedString(name));
+                final String name = pokemonList.getJSONObject(position).getString("name").trim();
+                holder.name.setText(Utils.getFormattedString(name));
+                holder.id.setText(Utils.getFormattedId(position + 1));
+                holder.item.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(PokemonListActivity.this, PokemonActivity.class);
+                        intent.putExtra("pokemon_name", name);
+                        PokemonListActivity.this.startActivity(intent);
+                    }
+                });
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -148,49 +129,21 @@ public class PokemonListActivity extends AppCompatActivity {
             return pokemonList.length();
         }
 
-        public void setNewPokemon(JSONArray pokemonList) {
+        void setNewPokemon(JSONArray pokemonList) {
             this.pokemonList = pokemonList;
             notifyDataSetChanged();
         }
 
-        public void setPokemonData(JSONObject pokemonData) {
-            String name1 = "";
-            String name2 = "";
-            String id = "";
-            String type1 = "";
-            String type2 = "";
-            try {
-                name1 = pokemonData.getString("name");
-                name2 = pokemonData.getString("name");
-                id = pokemonData.getString("id");
-                JSONArray types = pokemonData.getJSONArray("types");
-                type1 = types.getJSONObject(0).getJSONObject("type").getString("name");
-                if(types.length() == 2) {
-                    type2 = types.getJSONObject(1).getJSONObject("type").getString("name");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Pokemon pokemon = new Pokemon(name1, name2, id, type1, type2);
-            notifyDataSetChanged();
-        }
-
         class PokemonHolder extends RecyclerView.ViewHolder {
-            public ImageView sprite;
-            public TextView name1;
-            public TextView name2;
+            LinearLayout item;
             public TextView id;
-            public TextView type1;
-            public TextView type2;
+            public TextView name;
 
-            public PokemonHolder(View itemView) {
+            PokemonHolder(View itemView) {
                 super(itemView);
-                sprite = itemView.findViewById(R.id.rv_pokemon_list_item_sprite);
-                name1 = itemView.findViewById(R.id.rv_pokemon_list_item_name1);
-                name2 = itemView.findViewById(R.id.rv_pokemon_list_item_name2);
                 id = itemView.findViewById(R.id.rv_pokemon_list_item_id);
-                type1 = itemView.findViewById(R.id.rv_pokemon_list_item_type1);
-                type2 = itemView.findViewById(R.id.rv_pokemon_list_item_type2);
+                item = itemView.findViewById(R.id.rv_pokemon_list_item);
+                name = itemView.findViewById(R.id.rv_pokemon_list_item_name);
             }
         }
     }
@@ -201,22 +154,5 @@ public class PokemonListActivity extends AppCompatActivity {
             Log.d(TAG, intent.getAction());
             ((PokemonListAdapter)rvPokemonList.getAdapter()).setNewPokemon(getPokemonListFromFile());
         }
-    }
-
-    public class PokemonUpdate extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, intent.getAction());
-            String name = intent.getStringExtra("name");
-            ((PokemonListAdapter)rvPokemonList.getAdapter()).setPokemonData(getPokemonFromFile(name));
-        }
-    }
-
-    private static void bindPokemonToHolder(PokemonListAdapter.PokemonHolder holder, Pokemon pokemon) {
-        holder.name1.setText(Utils.getFormattedString(pokemon.getName1()));
-        holder.name2.setText(Utils.getFormattedString(pokemon.getName2()));
-        holder.id.setText(Utils.getFormattedString(pokemon.getId()));
-        holder.type1.setText(Utils.getFormattedString(pokemon.getType1()));
-        holder.type2.setText(Utils.getFormattedString(pokemon.getType2()));
     }
 }

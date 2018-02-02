@@ -7,6 +7,6 @@
         android:top="10dp"
         android:right="10dp"
         android:bottom="10dp" />
-    <solid android:color="@android:color/darker_gray" />
-    <stroke android:width="5dip" android:color="@android:color/black"/>
+    <solid android:color="@color/type_normal_interior" />
+    <stroke android:width="5dip" android:color="@color/type_normal_exterior"/>
 </shape>

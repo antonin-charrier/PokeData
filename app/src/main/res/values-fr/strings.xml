@@ -1,0 +1,35 @@
+<resources>
+    <!-- Home Activity -->
+    <string name="app_name">PokeData</string>
+    <string name="title_activity_pokemon_list">PokemonListActivity</string>
+    <string name="title_activity_pokemon">PokemonActivity</string>
+    <string name="all_pokemon">Tous les Pokémon</string>
+
+    <!-- Pokemon List Activity -->
+
+    <!-- Pokemon Activity -->
+    <string name="abilities">Talents</string>
+    <string name="isHidden">(talent caché)</string>
+    <string name="height">Taille</string>
+    <string name="weight">Poids</string>
+    <string name="type_normal">Normal</string>
+    <string name="type_fire">Feu</string>
+    <string name="type_water">Eau</string>
+    <string name="type_grass">Plante</string>
+    <string name="type_bug">Insecte</string>
+    <string name="type_electric">Electrik</string>
+    <string name="type_ground">Sol</string>
+    <string name="type_rock">Roche</string>
+    <string name="type_steel">Acier</string>
+    <string name="type_fighting">Combat</string>
+    <string name="type_psychic">Psy</string>
+    <string name="type_ghost">Spectre</string>
+    <string name="type_dark">Ténèbres</string>
+    <string name="type_dragon">Dragon</string>
+    <string name="type_fairy">Fée</string>
+    <string name="type_ice">Glace</string>
+    <string name="type_flying">Vol</string>
+    <string name="type_poison">Poison</string>
+    <string name="type_unknown">\???</string>
+
+</resources>

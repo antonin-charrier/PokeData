@@ -1,8 +1,8 @@
 package fr.iti.pokedata.Services;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import fr.iti.pokedata.Activities.PokemonListActivity;
+import fr.iti.pokedata.Activities.PokemonActivity;
 import fr.iti.pokedata.Utils.ServicesUtils;
 
 public class GetPokemonService extends IntentService {
@@ -54,7 +54,7 @@ public class GetPokemonService extends IntentService {
             if(HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
                 ServicesUtils.copyInputStreamToFile(conn.getInputStream(), new File(getCacheDir(), name+".json"));
                 Log.i(TAG, "Completed download of Pokemon list JSON");
-                Intent intent = new Intent(PokemonListActivity.POKEMON_UPDATE);
+                Intent intent = new Intent(PokemonActivity.POKEMON_UPDATE);
                 intent.putExtra("name", name);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
             }
