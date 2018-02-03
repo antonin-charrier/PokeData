@@ -12,6 +12,15 @@
     <string name="isHidden">(hidden ability)</string>
     <string name="height">Height</string>
     <string name="weight">Weight</string>
+    <string name="sprites">Sprites</string>
+    <string name="spriteFrontDefault">Front</string>
+    <string name="spriteFrontFemale">Front female</string>
+    <string name="spriteFrontShiny">Front shiny</string>
+    <string name="spriteFrontShinyFemale">Front shiny female</string>
+    <string name="spriteBackDefault">Back</string>
+    <string name="spriteBackFemale">Back female</string>
+    <string name="spriteBackShiny">Back shiny</string>
+    <string name="spriteBackShinyFemale">Back shiny female</string>
     <string name="type_normal">Normal</string>
     <string name="type_fire">Fire</string>
     <string name="type_water">Water</string>

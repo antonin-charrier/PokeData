@@ -11,10 +11,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -29,6 +31,8 @@ import java.io.InputStream;
 
 import fr.iti.pokedata.R;
 import fr.iti.pokedata.Services.GetPokemonService;
+import fr.iti.pokedata.Utils.GlideApp;
+import fr.iti.pokedata.Utils.GlideRequests;
 import fr.iti.pokedata.Utils.Utils;
 
 public class PokemonActivity extends AppCompatActivity {
@@ -51,8 +55,26 @@ public class PokemonActivity extends AppCompatActivity {
     TextView tv_abilities;
     TextView tv_height;
     TextView tv_weight;
-    ScrollView sv;
-    RelativeLayout pbLayout;
+    ImageView iv_mainImage;
+    ImageView iv_spriteFrontDefault;
+    ImageView iv_spriteFrontFemale;
+    ImageView iv_spriteFrontShiny;
+    ImageView iv_spriteFrontShinyFemale;
+    ImageView iv_spriteBackDefault;
+    ImageView iv_spriteBackFemale;
+    ImageView iv_spriteBackShiny;
+    ImageView iv_spriteBackShinyFemale;
+    LinearLayout ll_spriteFrontDefault;
+    LinearLayout ll_spriteFrontFemale;
+    LinearLayout ll_spriteFrontShiny;
+    LinearLayout ll_spriteFrontShinyFemale;
+    LinearLayout ll_spriteBackDefault;
+    LinearLayout ll_spriteBackFemale;
+    LinearLayout ll_spriteBackShiny;
+    LinearLayout ll_spriteBackShinyFemale;
+    ScrollView sv_pokemon;
+    RelativeLayout pb_loading;
+    GlideRequests glide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +103,39 @@ public class PokemonActivity extends AppCompatActivity {
         tv_abilities = findViewById(R.id.pokemon_abilities);
         tv_height = findViewById(R.id.pokemon_height);
         tv_weight = findViewById(R.id.pokemon_weight);
-        sv = findViewById(R.id.pokemon_sv);
-        pbLayout = findViewById(R.id.pokemon_progress_bar_layout);
+        iv_mainImage = findViewById(R.id.pokemon_main_image);
+        iv_spriteFrontDefault = findViewById(R.id.pokemon_sprite_front_default);
+        iv_spriteFrontFemale = findViewById(R.id.pokemon_sprite_front_female);
+        iv_spriteFrontShiny = findViewById(R.id.pokemon_sprite_front_shiny);
+        iv_spriteFrontShinyFemale = findViewById(R.id.pokemon_sprite_front_shiny_female);
+        iv_spriteBackDefault = findViewById(R.id.pokemon_sprite_back_default);
+        iv_spriteBackFemale = findViewById(R.id.pokemon_sprite_back_female);
+        iv_spriteBackShiny = findViewById(R.id.pokemon_sprite_back_shiny);
+        iv_spriteBackShinyFemale = findViewById(R.id.pokemon_sprite_back_shiny_female);
+        ll_spriteFrontDefault = findViewById(R.id.pokemon_sprite_front_default_layout);
+        ll_spriteFrontFemale = findViewById(R.id.pokemon_sprite_front_female_layout);
+        ll_spriteFrontShiny = findViewById(R.id.pokemon_sprite_front_shiny_layout);
+        ll_spriteFrontShinyFemale = findViewById(R.id.pokemon_sprite_front_shiny_female_layout);
+        ll_spriteBackDefault = findViewById(R.id.pokemon_sprite_back_default_layout);
+        ll_spriteBackFemale = findViewById(R.id.pokemon_sprite_back_female_layout);
+        ll_spriteBackShiny = findViewById(R.id.pokemon_sprite_back_shiny_layout);
+        ll_spriteBackShinyFemale = findViewById(R.id.pokemon_sprite_back_shiny_female_layout);
+        sv_pokemon = findViewById(R.id.pokemon_sv);
+        pb_loading = findViewById(R.id.pokemon_progress_bar_layout);
 
-        sv.setVisibility(View.GONE);
-        pbLayout.setVisibility(View.VISIBLE);
+        ll_spriteFrontDefault.setVisibility(View.VISIBLE);
+        ll_spriteFrontFemale.setVisibility(View.VISIBLE);
+        ll_spriteFrontShiny.setVisibility(View.VISIBLE);
+        ll_spriteFrontShinyFemale.setVisibility(View.VISIBLE);
+        ll_spriteBackDefault.setVisibility(View.VISIBLE);
+        ll_spriteBackFemale.setVisibility(View.VISIBLE);
+        ll_spriteBackShiny.setVisibility(View.VISIBLE);
+        ll_spriteBackShinyFemale.setVisibility(View.VISIBLE);
+        sv_pokemon.setVisibility(View.GONE);
+        pb_loading.setVisibility(View.VISIBLE);
+
+        glide = GlideApp.with(this);
+        glide.load("http://www.pokestadium.com/sprites/xy/" + name + ".gif").into(iv_mainImage);
 
         GetPokemonService.getPokemon(this, name);
         IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
@@ -102,9 +152,21 @@ public class PokemonActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.browser:
+                Intent intent = new Intent(PokemonActivity.this, BrowserActivity.class);
+                intent.putExtra("pokemon_name", name);
+                PokemonActivity.this.startActivity(intent);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_pokemon, menu);
+        return true;
     }
 
     private void setupUI() {
@@ -339,6 +401,8 @@ public class PokemonActivity extends AppCompatActivity {
         try {
             this.name = pokemon.getString("name");
             this.id = Integer.parseInt(pokemon.getString("id"));
+
+            //TYPES
             JSONArray typesArray = pokemon.getJSONArray("types");
             JSONObject jsonType0 = typesArray.getJSONObject(0);
             String stringType0 = jsonType0.getJSONObject("type").getString("name");
@@ -352,6 +416,8 @@ public class PokemonActivity extends AppCompatActivity {
                 this.type2 = checkTypes(stringType1);
             }
             JSONArray abilitiesArray = pokemon.getJSONArray("abilities");
+
+            //ABILITIES
             this.abilities = "";
             for (int i = 0; i < abilitiesArray.length(); i++) {
                 String abilityName = Utils.getFormattedString(abilitiesArray.getJSONObject(i).getJSONObject("ability").getString("name"));
@@ -362,14 +428,103 @@ public class PokemonActivity extends AppCompatActivity {
                     abilityName += ", ";
                 this.abilities = abilityName + this.abilities;
             }
+
+            //HEIGHT & WEIGHT
             this.height = pokemon.getInt("height");
             this.weight = pokemon.getInt("weight");
+
+            //SPRITES
+            JSONObject jsonSprites = pokemon.getJSONObject("sprites");
+            this.checkSprites(jsonSprites);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         setupUI();
-        pbLayout.setVisibility(View.GONE);
-        sv.setVisibility(View.VISIBLE);
+        pb_loading.setVisibility(View.GONE);
+        sv_pokemon.setVisibility(View.VISIBLE);
+    }
+
+    public void checkSprites(JSONObject spritesURL) {
+        try {
+            if(!spritesURL.getString("front_default").equals("null")) {
+                glide.load(spritesURL.getString("front_default")).into(iv_spriteFrontDefault);
+            } else {
+                ll_spriteFrontDefault.setVisibility(View.GONE);
+                ll_spriteFrontDefault.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            if(!spritesURL.getString("front_female").equals("null")) {
+                glide.load(spritesURL.getString("front_female")).into(iv_spriteFrontFemale);
+            } else {
+                ll_spriteFrontFemale.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteFrontFemale.setVisibility(View.GONE);
+        }
+        try {
+            if(!spritesURL.getString("front_shiny").equals("null")) {
+                glide.load(spritesURL.getString("front_shiny")).into(iv_spriteFrontShiny);
+            } else {
+                ll_spriteFrontShiny.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteFrontShiny.setVisibility(View.GONE);
+        }
+        try {
+            if(!spritesURL.getString("front_shiny_female").equals("null")) {
+                glide.load(spritesURL.getString("front_shiny_female")).into(iv_spriteFrontShinyFemale);
+            } else {
+                ll_spriteFrontShinyFemale.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteFrontShinyFemale.setVisibility(View.GONE);
+        }
+        try {
+            if(!spritesURL.getString("back_default").equals("null")) {
+                glide.load(spritesURL.getString("back_default")).into(iv_spriteBackDefault);
+            } else {
+                ll_spriteBackDefault.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteBackDefault.setVisibility(View.GONE);
+        }
+        try {
+            if(!spritesURL.getString("back_female").equals("null")) {
+                glide.load(spritesURL.getString("back_female")).into(iv_spriteBackFemale);
+            } else {
+                ll_spriteBackFemale.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteBackFemale.setVisibility(View.GONE);
+        }
+        try {
+            if(!spritesURL.getString("back_shiny").equals("null")) {
+                glide.load(spritesURL.getString("back_shiny")).into(iv_spriteBackShiny);
+            } else {
+                ll_spriteBackShiny.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteBackShiny.setVisibility(View.GONE);
+        }
+        try {
+            if(!spritesURL.getString("back_shiny_female").equals("null")) {
+                glide.load(spritesURL.getString("back_shiny_female")).into(iv_spriteBackShinyFemale);
+            } else {
+                ll_spriteBackShinyFemale.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ll_spriteBackShinyFemale.setVisibility(View.GONE);
+        }
     }
 
     public JSONObject getPokemonFromFile(String name){

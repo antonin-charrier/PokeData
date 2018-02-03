@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -37,7 +38,9 @@ public class PokemonListActivity extends AppCompatActivity {
     private static final String TAG = PokemonListActivity.class.getName();
     public static final String POKEMON_LIST_UPDATE = "fr.iti.pokedata.POKEMON_LIST_UPDATE";
 
-    private RecyclerView rvPokemonList;
+    private RecyclerView rv_pokemonList;
+    RelativeLayout pb_loading;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +55,14 @@ public class PokemonListActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter(POKEMON_LIST_UPDATE);
         LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonListUpdate(), intentFilter);
 
-        rvPokemonList = findViewById(R.id.rv_pokemon_list);
-        rvPokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rvPokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile()));
+        pb_loading = findViewById(R.id.pokemon_list_progress_bar_layout);
+        rv_pokemonList = findViewById(R.id.rv_pokemon_list);
+
+        rv_pokemonList.setVisibility(View.GONE);
+        pb_loading.setVisibility(View.VISIBLE);
+
+        rv_pokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rv_pokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile()));
     }
 
     @Override
@@ -131,6 +139,8 @@ public class PokemonListActivity extends AppCompatActivity {
 
         void setNewPokemon(JSONArray pokemonList) {
             this.pokemonList = pokemonList;
+            pb_loading.setVisibility(View.GONE);
+            rv_pokemonList.setVisibility(View.VISIBLE);
             notifyDataSetChanged();
         }
 
@@ -152,7 +162,7 @@ public class PokemonListActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, intent.getAction());
-            ((PokemonListAdapter)rvPokemonList.getAdapter()).setNewPokemon(getPokemonListFromFile());
+            ((PokemonListAdapter) rv_pokemonList.getAdapter()).setNewPokemon(getPokemonListFromFile());
         }
     }
 }

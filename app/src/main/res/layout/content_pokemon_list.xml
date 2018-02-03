@@ -8,6 +8,20 @@
     tools:context="fr.iti.pokedata.Activities.PokemonListActivity"
     tools:showIn="@layout/activity_pokemon_list">
 
+    <RelativeLayout
+        android:id="@+id/pokemon_list_progress_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_pokemon_list"
         android:layout_width="match_parent"

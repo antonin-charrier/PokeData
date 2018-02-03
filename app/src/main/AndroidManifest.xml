@@ -3,6 +3,8 @@
     package="fr.iti.pokedata">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -35,6 +37,10 @@
         <activity
             android:name=".Activities.PokemonActivity"
             android:label="@string/title_activity_pokemon"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activities.BrowserActivity"
+            android:label="@string/title_activity_browser"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

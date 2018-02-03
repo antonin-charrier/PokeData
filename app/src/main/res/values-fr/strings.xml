@@ -12,6 +12,15 @@
     <string name="isHidden">(talent caché)</string>
     <string name="height">Taille</string>
     <string name="weight">Poids</string>
+    <string name="sprites">Sprites</string>
+    <string name="spriteFrontDefault">De face</string>
+    <string name="spriteFrontFemale">De face femelle</string>
+    <string name="spriteFrontShiny">De face shiny</string>
+    <string name="spriteFrontShinyFemale">De face shiny femelle</string>
+    <string name="spriteBackDefault">De dos</string>
+    <string name="spriteBackFemale">De dos femelle</string>
+    <string name="spriteBackShiny">De dos shiny</string>
+    <string name="spriteBackShinyFemale">De dos shiny femelle</string>
     <string name="type_normal">Normal</string>
     <string name="type_fire">Feu</string>
     <string name="type_water">Eau</string>
