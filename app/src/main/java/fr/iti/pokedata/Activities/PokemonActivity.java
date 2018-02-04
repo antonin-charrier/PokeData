@@ -144,6 +144,9 @@ public class PokemonActivity extends AppCompatActivity {
         ll_spriteBackShiny.setVisibility(View.VISIBLE);
         ll_spriteBackShinyFemale.setVisibility(View.VISIBLE);
 
+        type1 = R.string.type_unknown;
+        type2 = R.string.type_unknown;
+
         glide = GlideApp.with(this);
         glide.load("http://www.pokestadium.com/sprites/xy/" + name + ".gif").into(iv_mainImage);
 
@@ -156,19 +159,8 @@ public class PokemonActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonActivity.PokemonUpdate(), intentFilter);
         } else {
             isDownloaded = true;
-
-            try {
-                this.checkSprites(getPokemonFromFile(name).getJSONObject("sprites"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            sv_pokemon.setVisibility(View.VISIBLE);
-            pb_loading.setVisibility(View.GONE);
+            this.setPokemon(getPokemonFromFile(name));
         }
-
-        type1 = R.string.type_unknown;
-        type2 = R.string.type_unknown;
         setupUI();
     }
 
@@ -207,8 +199,8 @@ public class PokemonActivity extends AppCompatActivity {
         tv_id.setText(Utils.getFormattedId(id));
         updateTypes();
         tv_abilities.setText(Utils.getFormattedString(abilities));
-        tv_height.setText(Double.toString(height * 0.1) + " m");
-        tv_weight.setText(Double.toString(weight * 0.1) + " kg");
+        tv_height.setText(Double.toString(Math.round(height * 0.1 * Math.pow(10, 1)) / Math.pow(10, 1)) + " m");
+        tv_weight.setText(Double.toString(Math.round(weight * 0.1 * Math.pow(10, 1)) / Math.pow(10, 1)) + " kg");
     }
 
     private void updateTypes() {
