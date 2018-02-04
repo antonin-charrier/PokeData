@@ -11,6 +11,9 @@
     <!-- Pokemon List Activity -->
     <string name="downloadedList">Pokemon list has been updated</string>
 
+    <!-- Favorite Pokemon List Activity -->
+    <string name="downloadedFavList">Favorite Pokemon list has been updated</string>
+
     <!-- Pokemon Activity -->
     <string name="abilities">Abilities</string>
     <string name="isHidden">(hidden ability)</string>

@@ -1,12 +1,16 @@
 package fr.iti.pokedata.Activities;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,9 +29,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 
 import fr.iti.pokedata.R;
 import fr.iti.pokedata.Services.GetPokemonService;
@@ -91,19 +99,88 @@ public class PokemonActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final FloatingActionButton fab = findViewById(R.id.fab_favorite);
+
+        JSONArray favoritePokemonListArray = getFavoritePokemonListFromFile();
+        for(int i = 0; i < favoritePokemonListArray.length(); i++) {
+            try {
+                if (favoritePokemonListArray.getJSONObject(i).getString("name").equals(name)) {
+                    isFav = true;
+                    fab.setImageResource(android.R.drawable.btn_star_big_on);
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(isFav) {
                     isFav = false;
+                    JSONArray favoritePokemonListArray = getFavoritePokemonListFromFile();
+                    try {
+                        for(int i = 0; i < favoritePokemonListArray.length(); i++) {
+                            if(favoritePokemonListArray.getJSONObject(i).getString("name").equals(name)) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                    favoritePokemonListArray.remove(i);
+                                } else {
+                                    JSONArray list = new JSONArray();
+                                    if (favoritePokemonListArray != null) {
+                                        for (int j=0;j<favoritePokemonListArray.length();j++)
+                                        {
+                                            //Excluding the item at position
+                                            if (j != i)
+                                            {
+                                                list.put(favoritePokemonListArray.get(i));
+                                            }
+                                        }
+                                    }
+                                    favoritePokemonListArray = list;
+                                }
+                                break;
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    setFavoritePokemonListToFile(favoritePokemonListArray);
+
                     fab.setImageResource(android.R.drawable.btn_star_big_off);
                     Snackbar.make(view, Utils.getFormattedString(name) + " " + getString(R.string.removedFromFav), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
+                    final Intent emptyIntent = new Intent();
+                    PendingIntent pendingIntent = PendingIntent.getActivity(PokemonActivity.this, 0, emptyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    Utils.initChannels(PokemonActivity.this);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(PokemonActivity.this, "default")
+                            .setSmallIcon(android.R.drawable.ic_dialog_info)
+                            .setContentTitle(getString(R.string.favorites_pokemon))
+                            .setContentText(Utils.getFormattedString(name) + " " + getString(R.string.removedFromFav))
+                            .setContentIntent(pendingIntent);
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(0, builder.build());
+
                 } else {
                     isFav = true;
+                    JSONArray favoritePokemonListArray = getFavoritePokemonListFromFile();
+                    try {
+                        favoritePokemonListArray.put(new JSONObject("{\"name\":\"" + name + "\"}"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    setFavoritePokemonListToFile(favoritePokemonListArray);
                     fab.setImageResource(android.R.drawable.btn_star_big_on);
                     Snackbar.make(view, Utils.getFormattedString(name) + " " + getString(R.string.addedToFav), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
+                    final Intent emptyIntent = new Intent();
+                    PendingIntent pendingIntent = PendingIntent.getActivity(PokemonActivity.this, 0, emptyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    Utils.initChannels(PokemonActivity.this);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(PokemonActivity.this, "default")
+                            .setSmallIcon(android.R.drawable.ic_dialog_info)
+                            .setContentTitle(getString(R.string.favorites_pokemon))
+                            .setContentText(Utils.getFormattedString(name) + " " + getString(R.string.addedToFav))
+                            .setContentIntent(pendingIntent);
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(0, builder.build());
                 }
             }
         });
@@ -568,6 +645,35 @@ public class PokemonActivity extends AppCompatActivity {
             return new JSONObject();
         }
     }
+
+    public JSONArray getFavoritePokemonListFromFile(){
+        try {
+            InputStream is = new FileInputStream(getCacheDir() + "/" + "favoritePokemonList.json");
+            byte[] buffer = new byte[is.available()];
+            is.read(buffer);
+            is.close();
+            return new JSONArray(new String(buffer, "UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new JSONArray();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return new JSONArray();
+        }
+    }
+
+    public void setFavoritePokemonListToFile(JSONArray array){
+        try {
+            Writer output = null;
+            File file = new File(getCacheDir(), "favoritePokemonList.json");
+            output = new BufferedWriter(new FileWriter(file));
+            output.write(array.toString());
+            output.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public class PokemonUpdate extends BroadcastReceiver {
         @Override

@@ -1,6 +1,7 @@
 package fr.iti.pokedata.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -17,12 +18,14 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = HomeActivity.class.getName();
 
     Button btnAllPokemon;
+    Button btnFavoritePokemon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         btnAllPokemon = findViewById(R.id.btn_all_pokemon);
+        btnFavoritePokemon = findViewById(R.id.btn_favorites);
         btnAllPokemon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -30,6 +33,14 @@ public class HomeActivity extends AppCompatActivity {
                 HomeActivity.this.startActivity(intent);
             }
         });
+        btnFavoritePokemon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, FavoritePokemonListActivity.class);
+                HomeActivity.this.startActivity(intent);
+            }
+        });
+
     }
 
     @Override

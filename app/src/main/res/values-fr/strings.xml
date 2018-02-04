@@ -11,6 +11,9 @@
     <!-- Pokemon List Activity -->
     <string name="downloadedList">La liste de Pokémon a été mise à jour</string>
 
+    <!-- Favorite Pokemon List Activity -->
+    <string name="downloadedFavList">La liste des Pokémon favoris a été mise à jour</string>
+
     <!-- Pokemon Activity -->
     <string name="abilities">Talents</string>
     <string name="isHidden">(talent caché)</string>
