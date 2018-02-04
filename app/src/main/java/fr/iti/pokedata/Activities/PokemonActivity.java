@@ -38,6 +38,7 @@ import fr.iti.pokedata.Utils.Utils;
 public class PokemonActivity extends AppCompatActivity {
 
     private static final String TAG = PokemonActivity.class.getName();
+    private static final String IS_DOWNLOADED = "fr.iti.pokedata.POKEMON_DOWNLOADED";
     public static final String POKEMON_UPDATE = "fr.iti.pokedata.POKEMON_UPDATE";
 
     private String name = "";
@@ -47,6 +48,8 @@ public class PokemonActivity extends AppCompatActivity {
     private String abilities = "";
     private int height;
     private int weight;
+    private boolean isFav = false;
+    private boolean isDownloaded = false;
 
     TextView tv_name;
     TextView tv_id;
@@ -87,12 +90,21 @@ public class PokemonActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab_favorite);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(isFav) {
+                    isFav = false;
+                    fab.setImageResource(android.R.drawable.btn_star_big_off);
+                    Snackbar.make(view, Utils.getFormattedString(name) + " " + getString(R.string.removedFromFav), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    isFav = true;
+                    fab.setImageResource(android.R.drawable.btn_star_big_on);
+                    Snackbar.make(view, Utils.getFormattedString(name) + " " + getString(R.string.addedToFav), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
             }
         });
 
@@ -131,19 +143,40 @@ public class PokemonActivity extends AppCompatActivity {
         ll_spriteBackFemale.setVisibility(View.VISIBLE);
         ll_spriteBackShiny.setVisibility(View.VISIBLE);
         ll_spriteBackShinyFemale.setVisibility(View.VISIBLE);
-        sv_pokemon.setVisibility(View.GONE);
-        pb_loading.setVisibility(View.VISIBLE);
 
         glide = GlideApp.with(this);
         glide.load("http://www.pokestadium.com/sprites/xy/" + name + ".gif").into(iv_mainImage);
 
-        GetPokemonService.getPokemon(this, name);
-        IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonActivity.PokemonUpdate(), intentFilter);
+        if(savedInstanceState == null || !savedInstanceState.getBoolean(IS_DOWNLOADED)) {
+            sv_pokemon.setVisibility(View.GONE);
+            pb_loading.setVisibility(View.VISIBLE);
+
+            GetPokemonService.getPokemon(this, name);
+            IntentFilter intentFilter = new IntentFilter(POKEMON_UPDATE);
+            LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonActivity.PokemonUpdate(), intentFilter);
+        } else {
+            isDownloaded = true;
+
+            try {
+                this.checkSprites(getPokemonFromFile(name).getJSONObject("sprites"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            sv_pokemon.setVisibility(View.VISIBLE);
+            pb_loading.setVisibility(View.GONE);
+        }
 
         type1 = R.string.type_unknown;
         type2 = R.string.type_unknown;
         setupUI();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(IS_DOWNLOADED, isDownloaded);
+
     }
 
     @Override
@@ -436,6 +469,7 @@ public class PokemonActivity extends AppCompatActivity {
             //SPRITES
             JSONObject jsonSprites = pokemon.getJSONObject("sprites");
             this.checkSprites(jsonSprites);
+            isDownloaded = true;
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/notifs"
+        android:icon="@mipmap/ic_notifications_none_white_24dp"
+        android:title="Notifications"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +37,7 @@ import fr.iti.pokedata.Utils.Utils;
 public class PokemonListActivity extends AppCompatActivity {
 
     private static final String TAG = PokemonListActivity.class.getName();
+    private static final String IS_DOWNLOADED = "fr.iti.pokedata.POKEMON_LIST_DOWNLOADED";
     public static final String POKEMON_LIST_UPDATE = "fr.iti.pokedata.POKEMON_LIST_UPDATE";
 
     private RecyclerView rv_pokemonList;
@@ -51,18 +53,30 @@ public class PokemonListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        GetPokemonListService.getAllPokemon(this);
-        IntentFilter intentFilter = new IntentFilter(POKEMON_LIST_UPDATE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonListUpdate(), intentFilter);
-
         pb_loading = findViewById(R.id.pokemon_list_progress_bar_layout);
         rv_pokemonList = findViewById(R.id.rv_pokemon_list);
 
-        rv_pokemonList.setVisibility(View.GONE);
-        pb_loading.setVisibility(View.VISIBLE);
+        if(savedInstanceState == null || !savedInstanceState.getBoolean(IS_DOWNLOADED)) {
+            GetPokemonListService.getAllPokemon(this);
+            IntentFilter intentFilter = new IntentFilter(POKEMON_LIST_UPDATE);
+            LocalBroadcastManager.getInstance(this).registerReceiver(new PokemonListUpdate(), intentFilter);
+            rv_pokemonList.setVisibility(View.GONE);
+            pb_loading.setVisibility(View.VISIBLE);
+        } else {
+            rv_pokemonList.setVisibility(View.VISIBLE);
+            pb_loading.setVisibility(View.GONE);
+        }
 
         rv_pokemonList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rv_pokemonList.setAdapter(new PokemonListAdapter(getPokemonListFromFile()));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(IS_DOWNLOADED,
+                ((PokemonListAdapter)rv_pokemonList.getAdapter()).getPokemonList().length() > 0);
+
     }
 
     @Override
@@ -96,6 +110,8 @@ public class PokemonListActivity extends AppCompatActivity {
     private class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonHolder> {
 
         private JSONArray pokemonList;
+
+        public JSONArray getPokemonList() { return pokemonList; }
 
         PokemonListAdapter(JSONArray pokemonList) {
             this.pokemonList = pokemonList;
@@ -163,6 +179,7 @@ public class PokemonListActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, intent.getAction());
             ((PokemonListAdapter) rv_pokemonList.getAdapter()).setNewPokemon(getPokemonListFromFile());
+            Toast.makeText(getBaseContext(), getString(R.string.downloadedList), Toast.LENGTH_SHORT).show();
         }
     }
 }

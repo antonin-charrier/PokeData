@@ -1,11 +1,15 @@
 <resources>
-    <!-- Home Activity -->
     <string name="app_name">PokeData</string>
     <string name="title_activity_pokemon_list">PokemonListActivity</string>
     <string name="title_activity_pokemon">PokemonActivity</string>
+    <string name="title_activity_browser">BrowserActivity</string>
+
+    <!-- Home Activity -->
     <string name="all_pokemon">Tous les Pokémon</string>
+    <string name="favorites_pokemon">Pokémon favoris</string>
 
     <!-- Pokemon List Activity -->
+    <string name="downloadedList">La liste de Pokémon a été mise à jour</string>
 
     <!-- Pokemon Activity -->
     <string name="abilities">Talents</string>
@@ -40,5 +44,7 @@
     <string name="type_flying">Vol</string>
     <string name="type_poison">Poison</string>
     <string name="type_unknown">\???</string>
+    <string name="addedToFav">a été ajouté aux favoris</string>
+    <string name="removedFromFav">a été retiré des favoris</string>
 
 </resources>
